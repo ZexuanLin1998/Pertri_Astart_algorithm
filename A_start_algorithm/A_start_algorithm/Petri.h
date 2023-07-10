@@ -23,8 +23,10 @@ public:
 	int g;
 	int h;
 	int f;
+	int distance = 0;
+	
 	vector<shared_ptr<State>> father_Node;
-	State() { ; }
+	State() {;}
 	~State()
 	{
 		;
@@ -35,7 +37,8 @@ public:
 class open_cmp {
 public:
 	bool operator() (const shared_ptr<State> a, const shared_ptr<State> b) {
-		return a->g > b->g;   // 小根堆
+		return a->f > b->f;   // 小根堆
+		//return a->g > b->g;
 	}
 	
 };
@@ -53,7 +56,7 @@ public:
 	//std::vector<shared_ptr<State>>Close_list;
 	Petri() { ; }
 	void play(vector<int>M, vector<int>m_Goal, vector<vector<int>>Pre, vector<vector<int>>Post,vector<int>delay, vector<int>goal_place,vector<int>goal_marking,
-		vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post);
+		vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post, vector<vector<string>>place_info);
 };
 
 class Vertx
