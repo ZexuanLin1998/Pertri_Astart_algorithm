@@ -8,12 +8,12 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 	vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post, vector<vector<string>>place_info)
 {
 	shared_ptr<State> inital_temp(new State);
+	/*提取初始状态*/
 	for (int i = 0;i < M.size();i++)
 		inital_temp->m.push_back(M[i]);
 	for (int i = 0;i < delays.size();i++)
 		inital_temp->waitting_time.push_back(0);
 	inital_temp->g = 0;
-	/*修改*/
 	for (int i = 0;i < inital_temp->m.size();i++)
 	{
 		if (inital_temp->m[i] > 0)
@@ -38,17 +38,14 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 	{
 		init_str.append(init_m_info[i]);
 	}
-	//inital_temp->name = init_str;
 	inital_temp->discard = false;
 	Open_list.emplace(inital_temp);
 	int count = 0;
-
 
 	while (!Open_list.empty())
 	{
 		vector<int>enable_tran;
 		shared_ptr<State> curNode(new State);
-		pair<string, shared_ptr<State>>curNode_temp;//定义一个已扩展节点的缓存容器
 		/**************************************************************************/
 		auto list = Open_list.top();
 		curNode->m = list->m;
@@ -56,12 +53,15 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 		curNode->g = list->g;
 		curNode->discard = list->discard;
 		curNode->distance = list->distance;
+		curNode->h = list->distance;
 		curNode->f = curNode->g + curNode->distance;
+		curNode->tran = list->tran;
+		/*如果当前结点是旧结点直接删除*/
 		if (Open_list.top()->discard == true )
 		{
 			Open_list.pop();
 			continue;
-		}
+		}	
 		/*************************************************************************/
 		vector<string>curNode_m_info;//已扩展节点的标识信息
 		for (int i = 0;i < curNode->m.size();i++)
@@ -74,10 +74,10 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 		{
 			curNode_str.append(curNode_m_info[i]);
 		}
-		curNode_temp.first = curNode_str;
-		curNode_temp.second = curNode;
-		Open_list.pop();
+		/*************************************************************************/
 
+		Open_list.pop();
+			
 		for (int i = 0;i < Pre[0].size();i++)
 		{
 			count = 0;
@@ -94,7 +94,6 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 		for (auto t : enable_tran)
 		{
 			shared_ptr<State>curNode_Son(new State);
-			pair<string, shared_ptr<State>>curNode_Son_temp;//定义一个待扩展节点的缓存容器
 			vector<int> lamba;
 			vector<int>unempty_place;
 			
@@ -108,16 +107,10 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 				lamba.push_back(delays[unempty_place[i]] - curNode->waitting_time[unempty_place[i]]);
 				
 			}
-			/*for (int i = 0;i < lamba.size();i++)
-			{
-				cout << "lamba[" << i << "] = " << lamba[i] << " ";
-			}
-			cout << endl;*/
+
 			int max_lamba = *max_element(lamba.begin(),lamba.end());
 			if (max_lamba < 0)
 				max_lamba = 0;
-			//cout << " max_lamba : "<<max_lamba << " ";
-			//cout << endl;
 
 			for (int p = 0;p < Pre.size();p++)
 			{
@@ -128,13 +121,7 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 				if (delays[p] == 0)
 					curNode_Son->waitting_time[p] = 0;
 			}
-			/*for (int i= 0;i < unempty_place.size();i++)
-			{
-				curNode_Son->waitting_time[unempty_place[i]]=curNode->waitting_time[unempty_place[i]] -
-					curNode->waitting_time[unempty_place[i]] * Pre[unempty_place[i]][t] + max_lamba * (curNode_Son->m[unempty_place[i]] - Post[unempty_place[i]][t]);
-			}*/
 			curNode_Son->g = curNode->g + max_lamba;
-			//cout << curNode_Son->g << endl;
 			vector<string>curNode_Son_m_info;//待扩展节点的标识信息
 			for (int i = 0;i < curNode_Son->m.size();i++)
 			{
@@ -146,9 +133,9 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 			{
 				curNode_Son_str.append(curNode_Son_m_info[i]);
 			}
-			curNode_Son->father_Node.push_back(curNode);
-			curNode_Son_temp.first = curNode_Son_str;
-			curNode_Son_temp.second = curNode_Son;
+			curNode_Son->father_Node.push_back(list);
+			curNode_Son->tran = t;
+
 			/******************************************************************************************/
 			for (int i = 0;i < curNode_Son->m.size();i++)
 			{
@@ -164,62 +151,43 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 						curNode_Son->distance = curNode_Son->distance + delays[i];
 				}
 			}
+			curNode_Son->h = curNode_Son->distance;
 			curNode_Son->f = curNode_Son->g + curNode_Son->distance;
-			//cout << "g = " << curNode_Son->g << endl;
-			/*if (curNode_temp.first == "0/1/1/1/7/1/11/2/15/3/18/1/24/3/27/1/28/1/29/1/30/1/31/1/32/1/34/1/")
-			{
-				int c = 0;
-			}*/
+
 			/*将已扩展节点存入close_list中*/
 		    std::list<shared_ptr<State>> member_list;
-			member_list.push_back(curNode_temp.second);
+			member_list.push_back(curNode);
 			Close_list.emplace(make_pair(curNode_str, member_list));
 			
 			if (curNode_Son->m[goal_place[0]] == goal_marking[0])
 			{
-				
-				Close_list[curNode_Son_temp.first].push_back(curNode_Son_temp.second);
+				Close_list[curNode_Son_str].push_back(curNode_Son);
 				//exit(1);
-				cout << "f = " << curNode_Son_temp.second->f << " ";
-				cout << "g = " << curNode_Son_temp.second->g << " ";
+				cout << "f = " << curNode_Son->f << " ";
+				cout << "g = " << curNode_Son->g << " ";
 				cout << endl;
 			}
-			/*for (int i = 0;i < curNode_Son->m.size();i++)
-			{
-				if (curNode_Son->m[i] > 0)
-				{
-					if (place_info[i][2] == "initial")
-						curNode_Son->distance = curNode_Son->distance + atoi(place_info[i][1].c_str());
-					if (place_info[i][2] == "operator")
-						curNode_Son->distance = curNode_Son->distance + atoi(place_info[i][1].c_str());
-					if (place_info[i][2] == "buff")
-						curNode_Son->distance = curNode_Son->distance + atoi(place_info[i][1].c_str());
-					if (place_info[i][2] == "cleaning")
-						curNode_Son->distance = curNode_Son->distance + delays[i];
-				}
-			}*/
 
-			if (Close_list.find(curNode_Son_temp.first) == Close_list.end())
+			if (Close_list.find(curNode_Son_str) == Close_list.end())
 			{	
 				std::list<shared_ptr<State>>curNode_member;
-				Open_list.emplace(curNode_Son_temp.second);
-				curNode_member.push_back(curNode_Son_temp.second);
-				Close_list.emplace(make_pair(curNode_Son_temp.first,curNode_member));
+				Open_list.emplace(curNode_Son);
+				curNode_member.push_back(curNode_Son);
+				Close_list.emplace(make_pair(curNode_Son_str,curNode_member));
 			}
-			else if(Close_list.find(curNode_Son_temp.first) != Close_list.end())
+			else if(Close_list.find(curNode_Son_str) != Close_list.end())
 			{
-				auto c_list = Close_list[curNode_Son_temp.first];
+				auto c_list = Close_list[curNode_Son_str];
 				for (auto it : c_list)
 				{
-					if (compare_G(it, curNode_Son_temp.second))
+					if (compare_G(it, curNode_Son))
 					{
-						if (compare_G(curNode_Son_temp.second, it))
+						if (compare_G(curNode_Son, it))
 						{
 							it->discard = true;
-							//Close_list.erase(Close_list.find(curNode_Son_temp.first));
-							Close_list[curNode_Son_temp.first].push_back(curNode_Son_temp.second);
-							curNode_Son_temp.second->discard = false;
-							Open_list.emplace(curNode_Son_temp.second);
+							Close_list[curNode_Son_str].push_back(curNode_Son);
+							curNode_Son->discard = false;
+							Open_list.emplace(curNode_Son);
 						}
 					}
 				}
@@ -227,6 +195,7 @@ void Petri::play(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vec
 			}
 			
 		}	
+		//cout <<"Open_list = "<< Open_list.size() << endl;
 	}
 	cout << " 已扩展结点" <<Close_list.size() << endl;
 
