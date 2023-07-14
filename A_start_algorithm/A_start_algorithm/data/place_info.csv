@@ -1,36 +1,36 @@
-﻿place_name,target distance,Connotative
-p1,12,initial
-p2,12,operator
-p3,12,operator
-p4,8,buff
-p5,8,operator
-p6,0,buff
-p7,0,cleaning
-p8,0,control
-p9,8,operator
-p10,0,buff
-p11,0,cleaning
-p12,0,control
-p13,8,operator
-p14,0,buff
-p15,0,cleaning
-p16,0,control
-p17,0,buff
-p18,0,cleaning
-p19,0,control
-p20,4,buff
-p21,4,operator
-p22,4,operator
-p23,0,buff
-p24,0,cleaning
-p25,0,control
-p26,0,target
-p27,0,control
-p28,0,control
-p29,0,control
-p30,0,control
-p31,0,control
-p32,0,control
-p33,0,control
-p34,0,control
-p35,0,control
+place_name	target distance	Connotative
+p1	15	initial
+p2	15	operator
+p3	15	operator
+p4	5	buff
+p5	5	operator
+p6	0	buff
+p7	0	cleaning
+p8	0	control
+p9	10	operator
+p10	0	buff
+p11	0	cleaning
+p12	0	control
+p13	15	operator
+p14	0	buff
+p15	0	cleaning
+p16	0	control
+p17	0	buff
+p18	0	cleaning
+p19	0	control
+p20	5	buff
+p21	5	operator
+p22	10	operator
+p23	0	buff
+p24	0	cleaning
+p25	0	control
+p26	0	target
+p27	0	control
+p28	0	control
+p29	0	control
+p30	0	control
+p31	0	control
+p32	0	control
+p33	0	control
+p34	0	control
+p35	0	control

@@ -19,11 +19,12 @@ public:
 	std::vector<int>m;
 	std::vector<int>waitting_time;//以等待时间
 	bool discard = false;
-	int g;
-	int h;
-	int f;
+	int g = 0;
+	int h = 0;
+	int f = 0;
 	int distance = 0;	
 	int tran = 0; 
+	bool priorty = false;
 	vector<shared_ptr<State>> father_Node;
 	State() {;}
 	~State()
@@ -35,7 +36,7 @@ public:
 
 class open_cmp {
 public:
-	bool operator() (const shared_ptr<State> a, const shared_ptr<State> b) {
+	bool operator() (const shared_ptr<State> &a, const shared_ptr<State> &b) {
 		//return a->f > b->f;   // 小根堆
 		return a->g > b->g;
 	}
