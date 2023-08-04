@@ -21,6 +21,8 @@ int main()
 	std::vector<vector<int>>Post = read_matrix(Post_Path, place_num);
 	std::vector<vector<int>>transpose_Pre = transposeInPlace(Pre);
 	std::vector<vector<int>>transpose_Post = transposeInPlace(Post);
-	pn->play(M0, m_goal, Pre, Post,delays, goal_place, goal_marking, transpose_Pre, transpose_Post, place_info);
+	//pn->play(M0, m_goal, Pre, Post, delays, goal_place, goal_marking, transpose_Pre, transpose_Post, place_info);
+	//pn->Product_molde(M0, m_goal, Pre, Post,delays, goal_place, goal_marking, transpose_Pre, transpose_Post, place_info);
+	pn->Product_molde_new(M0, m_goal, Pre, Post, delays, goal_place, goal_marking, transpose_Pre, transpose_Post, place_info);
 	return 0;
 }

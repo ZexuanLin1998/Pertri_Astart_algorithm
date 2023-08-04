@@ -10,6 +10,9 @@ using namespace std;
 typedef  int WEIGHT;
 class Place;
 class Transition;
+class expand_State;
+class open_cmp;
+class f_cmp;
 class State;
 
 
@@ -19,13 +22,16 @@ public:
 	std::vector<int>m;
 	std::vector<int>waitting_time;//以等待时间
 	bool discard = false;
+	//bool discard = true;
 	int g = 0;
 	int h = 0;
 	int f = 0;
 	int distance = 0;	
 	int tran = 0; 
 	bool priorty = false;
+	bool open = true;
 	vector<shared_ptr<State>> father_Node;
+	vector<shared_ptr<State>> childern_Node;
 	State() {;}
 	~State()
 	{
@@ -33,16 +39,32 @@ public:
 	}
 };
 
-
 class open_cmp {
 public:
-	bool operator() (const shared_ptr<State> &a, const shared_ptr<State> &b) {
-		//return a->f > b->f;   // 小根堆
+	virtual bool operator() (const shared_ptr<State> &a, const shared_ptr<State> &b) {
+		//return a->h > b->h;
+		/*if(a->f==b->f)
+			return a->f > b->f; */  // 小根堆//
+		//return a->f > b->f;
 		return a->g > b->g;
 	}
 	
 };
 
+class expand_State :public State
+{
+public:
+	string m_x_str;
+	expand_State() { ; }
+};
+class f_cmp
+{
+public:
+	bool operator()(const shared_ptr<expand_State>&a, const shared_ptr<expand_State>&b)
+	{
+		return a->f > b->f;
+	}
+};
 class Petri
 {
 public:
@@ -56,6 +78,15 @@ public:
 	//std::vector<shared_ptr<State>>Close_list;
 	Petri() { ; }
 	void play(vector<int>M, vector<int>m_Goal, vector<vector<int>>Pre, vector<vector<int>>Post,vector<int>delay, vector<int>goal_place,vector<int>goal_marking,
+		vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post, vector<vector<string>>place_info);
+	/*priority_queue<shared_ptr<State>, vector<shared_ptr<State>>, open_cmp>Product_molde(int step,
+		vector<int>goal_place, vector<int>goal_marking, vector<int>delays,
+		vector<vector<int>> Pre, vector<vector<int>> Post, vector<vector<int>>transpose_Pre,
+		vector<vector<int>>transpose_Post,
+		vector<vector<string>>place_info);*/
+	void Product_molde(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vector<vector<int>> Post, vector<int>delays, vector<int>goal_place, vector<int>goal_marking,
+		vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post, vector<vector<string>>place_info);
+	void Product_molde_new(vector<int> M, vector<int> m_Goal, vector<vector<int>> Pre, vector<vector<int>> Post, vector<int>delays, vector<int>goal_place, vector<int>goal_marking,
 		vector<vector<int>>transpose_Pre, vector<vector<int>>transpose_Post, vector<vector<string>>place_info);
 };
 
